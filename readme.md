@@ -16,7 +16,7 @@ g++ read_file.cpp -std=c++23 -O3 -o test
 
 ## 文件读取方法
 
-下面的函数将文件中的全部内容读取到`string`中，返回`string`。
+read_file.cpp中实现了以下函数，它们将文件中的全部内容读取到`string`中，返回`string`。
 
 ### 1. 获取文件大小后，使用istream.read读取
 - `read_file_using_filesize_and_read`: 使用 `filesystem::file_size` 获取文件大小
@@ -38,8 +38,8 @@ g++ read_file.cpp -std=c++23 -O3 -o test
 - 文件大小：100 MB
 - 迭代次数：10次
 
+测试结果：
 - file_size + fin.read: 396 ms
-
 - tellg + fin.read: 363 ms
 - tellg + fin.read + resize_and_overwrite: 357 ms
 - oss << fin.rdbuf(): 660 ms
