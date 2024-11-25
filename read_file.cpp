@@ -1,4 +1,5 @@
 #include <chrono>
+#include <cstdio>
 #include <filesystem>
 #include <fstream>
 #include <functional>
@@ -11,6 +12,27 @@
 
 using namespace std;
 using namespace std::chrono;
+
+std::string read_file_using_stdio(const filesystem::path& file_name)
+{
+    FILE* file = fopen(file_name.c_str(), "rb");
+    if (!file) { throw runtime_error("Failed to open file"); }
+
+    long begin_pos = ftell(file);
+    fseek(file, 0, SEEK_END);
+    long end_pos = ftell(file);
+    fseek(file, begin_pos, SEEK_SET);
+    long size_to_read = end_pos - begin_pos;
+
+    string content;
+    content.resize(size_to_read);
+
+    fread(content.data(), 1, size_to_read, file);
+
+    fclose(file);
+
+    return content;
+}
 
 string read_file_using_filesize_and_read(const filesystem::path& file_name)
 {
@@ -87,6 +109,7 @@ string read_file_using_iterators(const filesystem::path& file_name)
 void benchmark_file_read_methods(const filesystem::path& file_name, int iterations)
 {
     vector<pair<string, function<string(const filesystem::path&)>>> methods = {
+        {                "file_size + stdio.fread",             read_file_using_stdio},
         {                   "file_size + fin.read", read_file_using_filesize_and_read},
         {                       "tellg + fin.read",    read_file_using_tellg_and_read},
         {"tellg + fin.read + resize_and_overwrite",    read_file_using_tellg_and_read},

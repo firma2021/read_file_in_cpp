@@ -18,6 +18,8 @@ g++ read_file.cpp -std=c++23 -O3 -o test
 
 read_file.cpp中实现了以下函数，它们将文件中的全部内容读取到`string`中，返回`string`。
 
+### 0.使用stdio库的ftell和fseek获取文件大小，而后用fread读取
+
 ### 1. 获取文件大小后，使用istream.read读取
 - `read_file_using_filesize_and_read`: 使用 `filesystem::file_size` 获取文件大小
 - `read_file_using_tellg_and_read`: 使用 `seekg + tellg` 获取文件大小
@@ -32,6 +34,8 @@ read_file.cpp中实现了以下函数，它们将文件中的全部内容读取�
 
 
 
+
+
 ## 性能比较
 
 测试条件：
@@ -39,20 +43,23 @@ read_file.cpp中实现了以下函数，它们将文件中的全部内容读取�
 - 迭代次数：10次
 
 测试结果：
-- file_size + fin.read: 396 ms
-- tellg + fin.read: 363 ms
-- tellg + fin.read + resize_and_overwrite: 357 ms
-- oss << fin.rdbuf(): 660 ms
-- fin >> noskipws >> oss.rdbuf(): 654 ms
-- istreambuf_iterator: 2746 ms
+test_file.size(): 100 MB, iter time: 10
+file_size + stdio.fread cost: 410 ms
+file_size + fin.read cost: 438 ms
+tellg + fin.read cost: 395 ms
+tellg + fin.read + resize_and_overwrite cost: 397 ms
+oss << fin.rdbuf() cost: 700 ms
+fin >> noskipws >> oss.rdbuf() cost: 781 ms
+istreambuf_iterator cost: 2782 ms
 
 
 
 ## 结论
 
-1. 方法1性能最佳
-2. 方法2性能适中，比方法1慢约1倍
-3. 方法3性能最差，比方法1慢约7倍
+1. stdio库不比iostream库快，且需要手动关闭文件，不推荐使用。
+2. 方法1性能最佳
+3. 方法2性能适中，比方法1慢约1倍
+4. 方法3性能最差，比方法1慢约7倍
 
 
 
